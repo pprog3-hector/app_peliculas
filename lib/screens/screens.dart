@@ -1,0 +1,1 @@
+export 'package:app_peliculas/screens/home_screen.dart';
