@@ -1,9 +1,14 @@
+import 'package:app_peliculas/models/models.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CardSwiper extends StatelessWidget {
-  const new({
+
+  final List<Movie> movies;
+
+  const CardSwiper({
     super.key,
+    required this.movies
   });
 
   @override
@@ -15,7 +20,7 @@ class CardSwiper extends StatelessWidget {
       width: double.infinity,
       height: size.height * 0.5,
       child: Swiper(
-        itemCount: 10,
+        itemCount: movies.length,
         layout: SwiperLayout.STACK,
         itemHeight: size.height * 0.4,
         itemWidth: size.width * 0.6,
@@ -29,7 +34,7 @@ class CardSwiper extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: FadeInImage(
                 placeholder: AssetImage('assets/jar-loading.gif'), 
-                image: NetworkImage('https://image.tmdb.org/t/p/original/ddnwokQ1ybe0vEErT2RdReZjByk.jpg'),
+                image: NetworkImage(movies[index].fullPosterImage),
                 fit: BoxFit.cover,
               ),
             ),

@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:app_peliculas/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MovieSlider extends StatelessWidget {
-  const new({
-    super.key,
+
+  final List<Movie> movies;
+  final String widgetName;
+
+  const MovieSlider({
+    super.key, 
+    required this.movies, 
+    required this.widgetName,
   });
 
   @override
@@ -14,9 +21,9 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text('Peliculas populares', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(widgetName, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
           ),
           Expanded(
             child: ListView.builder(
@@ -38,7 +45,7 @@ class MovieSlider extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           child: FadeInImage(
                             placeholder: const AssetImage('assets/jar-loading.gif'), 
-                            image: NetworkImage('https://i.pinimg.com/1200x/5d/e0/16/5de01684b848c903f9aa01cb38879a1a.jpg'),
+                            image: NetworkImage(movies[index].fullPosterImage),
                             width: 130,
                             height: 170,
                             fit: BoxFit.cover,
@@ -46,7 +53,7 @@ class MovieSlider extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Text('Nombre pelicula', style: TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 2,)
+                      Text(movies[index].title, style: TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 2,)
                     ],
                   ),
                 );

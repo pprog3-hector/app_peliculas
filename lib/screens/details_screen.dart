@@ -1,5 +1,5 @@
 import 'package:app_peliculas/themes/app_themes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DetailsScreen extends StatelessWidget {
    
@@ -69,9 +69,7 @@ class _PosterTitle extends StatelessWidget {
 }
 
 class _CustomAppBar extends StatelessWidget {
-  const new({
-    super.key,
-  });
+  const _CustomAppBar();
 
   @override
   Widget build(BuildContext context) {
