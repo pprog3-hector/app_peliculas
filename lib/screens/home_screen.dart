@@ -1,4 +1,5 @@
 import 'package:app_peliculas/provider/movies_provider.dart';
+import 'package:app_peliculas/search/movie_search.dart';
 import 'package:app_peliculas/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Peliculas', style: TextStyle(fontWeight: FontWeight.bold),),
         actions: [
           IconButton(
-            onPressed: (){}, 
+            onPressed: () => showSearch(context: context, delegate: MovieSearch()), 
             icon: const Icon(Icons.search)
           )
         ],
