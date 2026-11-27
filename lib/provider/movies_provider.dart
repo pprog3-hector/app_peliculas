@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_peliculas/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_ui/material_ui.dart';
@@ -10,6 +12,8 @@ class MoviesProvider extends ChangeNotifier{
 
   List<Movie> nowPlayingMovies = [];
   List<Movie> popularMovies = [];
+
+  Map<int, List<Cast>> movieCast = {};
   
   MoviesProvider(){
     print('MoviesProvider se esta inicializando');
@@ -49,4 +53,16 @@ class MoviesProvider extends ChangeNotifier{
     popularMovies = popularResponse.movie;
     notifyListeners();
   }
+
+  Future<List<Cast>> getMovieCast(int movieId) async{
+
+    if( movieCast.containsKey(movieId)) return movieCast[movieId]!;
+
+    final jsonData = await _getJsonData('3/movie/$movieId/credits');
+    final creditsResponse = CreditsResponse.fromJson(jsonData);
+    movieCast[movieId] = creditsResponse.cast;
+    return creditsResponse.cast;
+
+  }
+
 }

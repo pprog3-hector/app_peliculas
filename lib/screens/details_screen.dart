@@ -1,5 +1,8 @@
+import 'package:app_peliculas/models/models.dart';
+import 'package:app_peliculas/provider/movies_provider.dart';
 import 'package:app_peliculas/themes/app_themes.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatelessWidget {
    
@@ -7,16 +10,17 @@ class DetailsScreen extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+
+    final Movie movieModal = ModalRoute.of(context)!.settings.arguments as Movie;
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _CustomAppBar(),
+          _CustomAppBar(movie: movieModal,),
           SliverList(delegate: SliverChildListDelegate([
-            _PosterTitle(),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text('Ut do incididunt ullamco commodo excepteur deserunt adipisicing velit. Et amet ex adipisicing velit duis velit officia et consequat labore proident. Et ullamco cillum pariatur cupidatat incididunt nulla id quis sint. Minim nostrud tempor eiusmod voluptate proident culpa. Aliquip consectetur eu magna dolore ut minim. Dolore velit sit nisi esse exercitation cillum. Cupidatat cupidatat eu aute magna eu excepteur officia.', style: TextStyle(color: Colors.white, ), textAlign: TextAlign.justify,),
-            )
+            _PosterTitle(movie: movieModal),
+            _Overview(movie: movieModal),
+            _Casting(movie: movieModal,),
           ]))
         ],
       )
@@ -24,39 +28,126 @@ class DetailsScreen extends StatelessWidget {
   }
 }
 
-class _PosterTitle extends StatelessWidget {
-  const new({
-    super.key,
+class _Casting extends StatelessWidget {
+
+  final Movie movie;
+
+  const _Casting({
+    required this.movie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+
+    return FutureBuilder(
+      future: moviesProvider.getMovieCast(movie.id),
+      builder: (BuildContext context, AsyncSnapshot<List<Cast>> snapshot) {
+
+        if( !snapshot.hasData ){
+          return SizedBox(
+            height: 240,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        return Container(
+          margin: EdgeInsets.all(20),
+          height: 240,
+          width: double.infinity,
+          child: ListView.builder(
+            itemCount: snapshot.data!.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                // color: Colors.red,
+                height: 180,
+                width: 110,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/jar-loading.gif'), 
+                        image: NetworkImage(snapshot.data![index].fullPosterImage),
+                        width: 110,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(snapshot.data![index].character!, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis, maxLines: 2),
+                    Text(snapshot.data![index].name, style: TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis, maxLines: 2),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Overview extends StatelessWidget {
+
+  final Movie movie;
+
+  const _Overview({
+    required this.movie,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Text(movie.overview, style: const TextStyle(color: Colors.white), textAlign: TextAlign.justify,),
+    );
+  }
+}
+
+class _PosterTitle extends StatelessWidget {
+
+  final Movie movie;
+
+  const _PosterTitle({
+    required this.movie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(20),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: FadeInImage(
-              placeholder: AssetImage('assets/jar-loading.gif'), 
-              image: NetworkImage('https://i.pinimg.com/1200x/5d/e0/16/5de01684b848c903f9aa01cb38879a1a.jpg'),
+              placeholder: const AssetImage('assets/jar-loading.gif'), 
+              image: NetworkImage(movie.fullPosterImage),
               fit: BoxFit.cover,
+              width: 150,
               height: 220,
             ),
           ),
-          SizedBox(width: 20,),
+          const SizedBox(width: 20,),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Nombre pelicula', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
-                Text('The Oddysey', style: TextStyle(color: Colors.white)),
-                SizedBox(height: 10,),
+                Text(movie.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                Text(movie.originalTitle, style: const TextStyle(color: Colors.white)),
+                const SizedBox(height: 10,),
                 Row(
                   children: [
-                    Icon(Icons.star_rounded, color: Colors.yellow,),
-                    SizedBox(width: 5,),
-                    Text('8.9', style: TextStyle(color: Colors.white),)
+                    const Icon(Icons.star_rounded, color: Colors.yellow,),
+                    const SizedBox(width: 5,),
+                    Text('${movie.voteAverage.roundToDouble()}/10', style: const TextStyle(color: Colors.white),)
                   ]
                 )
               ],
@@ -69,7 +160,12 @@ class _PosterTitle extends StatelessWidget {
 }
 
 class _CustomAppBar extends StatelessWidget {
-  const _CustomAppBar();
+
+  final Movie movie;
+
+  const _CustomAppBar({
+    required this.movie
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +179,15 @@ class _CustomAppBar extends StatelessWidget {
           color: Colors.black38,
           width: double.infinity,
           alignment: Alignment.bottomCenter,
-          child: Text('Detalles', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis,)
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            child: Text(movie.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis,)
+          )
         ),
         centerTitle: true,
-        background: const FadeInImage(
-          placeholder: AssetImage('assets/jar-loading.gif'), 
-          image: AssetImage('assets/HO00005974.jpg'),
+        background: FadeInImage(
+          placeholder: const AssetImage('assets/jar-loading.gif'), 
+          image: NetworkImage(movie.fullBackdropPathImage),
           fit: BoxFit.cover,
         ),
       ),

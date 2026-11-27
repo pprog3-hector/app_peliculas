@@ -28,7 +28,7 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 10,
+              itemCount: movies.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   height: 200,
@@ -39,7 +39,7 @@ class MovieSlider extends StatelessWidget {
                       GestureDetector(
                         onTap: (){
                           print('Has pulsado una peli del LV');
-                          Navigator.pushNamed(context, '/details');
+                          Navigator.pushNamed(context, '/details', arguments: movies[index]);
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
